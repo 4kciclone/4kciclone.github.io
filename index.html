@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+  <title>Surpresa Insana</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', sans-serif;
+      color: white;
+      text-align: center;
+      overflow: hidden;
+      background: black;
+    }
+
+    .container {
+      padding-top: 100px;
+      max-width: 700px;
+      margin: 0 auto;
+    }
+
+    .message-box, .question-box {
+      margin: 40px auto;
+      max-width: 600px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 20px;
+      padding: 30px;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 0 20px #ff007f;
+      animation: popIn 0.8s ease forwards;
+      will-change: transform, opacity;
+    }
+
+    .question-box input {
+      padding: 10px;
+      font-size: 1em;
+      border: none;
+      border-radius: 10px;
+      width: 80%;
+      margin-top: 10px;
+    }
+
+    label {
+      font-size: 1.1em;
+      display: block;
+      margin-bottom: 10px;
+    }
+
+    .message-box p {
+      font-size: 1.2em;
+      line-height: 1.6;
+    }
+
+    .typing-line {
+      font-weight: bold;
+      color: #ff00cc;
+      font-size: 1.3em;
+      margin-top: 20px;
+      white-space: nowrap;
+      overflow: hidden;
+      border-right: 2px solid #ff00cc;
+      width: 0;
+      animation: typing 3s steps(40, end) 2s forwards, blink 0.7s infinite step-end alternate;
+    }
+
+    @keyframes typing {
+      from { width: 0 }
+      to { width: 100% }
+    }
+
+    @keyframes blink {
+      50% { border-color: transparent }
+    }
+
+    @keyframes popIn {
+      0% { transform: scale(0.5); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    .confetti-piece {
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      background-color: hsl(var(--hue), 70%, 60%);
+      animation: confettiFall 3s ease-out forwards;
+      opacity: 0.8;
+      will-change: transform;
+    }
+
+    @keyframes confettiFall {
+      0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+      100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+    }
+
+    .gif-dance {
+      width: 300px;
+      margin-top: 30px;
+      border-radius: 20px;
+      box-shadow: 0 0 20px magenta;
+      animation: shake 1s infinite;
+    }
+
+    @keyframes shake {
+      0% { transform: rotate(-2deg); }
+      50% { transform: rotate(2deg); }
+      100% { transform: rotate(-2deg); }
+    }
+
+    .final-btn, .music-btn {
+      margin-top: 30px;
+      padding: 15px 30px;
+      font-size: 1.2em;
+      background: #00ffff;
+      border: none;
+      border-radius: 10px;
+      color: #000;
+      font-weight: bold;
+      cursor: pointer;
+      animation: pulse 1s infinite;
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+      100% { transform: scale(1); }
+    }
+
+    .emoji-burst {
+      position: absolute;
+      font-size: 2rem;
+      animation: burst 2s ease-out forwards;
+    }
+
+    @keyframes burst {
+      0% { transform: translateY(0); opacity: 1; }
+      100% { transform: translateY(-200px); opacity: 0; }
+    }
+
+    .hidden { display: none; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div id="question-box" class="question-box">
+      <label id="question" for="answer"></label>
+      <input type="text" id="answer" autocomplete="off"/>
+    </div>
+
+    <div id="main-content" class="hidden">
+      <div class="message-box">
+        <p>Daqui a pouco faz 18... e vai virar mais uma desempregada no sistema 😂</p>
+        <p>Curte essa fase porque depois é boleto, caos e café frio!</p>
+        <p>Parabéns Paolla, mas sem drama — só mais um nível desbloqueado, agora daqui pra frente é só pra trás. 💥</p>
+        <p id="extra-line" class="typing-line"></p>
+      </div>
+      <img src="https://media.giphy.com/media/3o7TKxOhj5xv4xXXsI/giphy.gif" alt="dança" class="gif-dance" />
+      <button class="music-btn" onclick="startMusic()">Tocar Música 🎵</button>
+      <button class="final-btn" onclick="showFinalJoke()">Não clique Aqui! 🎁</button>
+      <div id="joke" class="hidden">
+        <div class="message-box" style="margin-top: 30px; background: #222;">
+          <h3>Candidata a desempregada 2028</h3>
+          <p>Nome: Paolla</p>
+          <p>Habilidades: decorar TikTok, dormir até meio-dia, perder o carregador</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="confetti-container"></div>
+  <audio id="bg-music" src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" loop></audio>
+
+  <script>
+    const questions = [
+      { q: 'Qual o primeiro nome da sua mãe?', a: 'edina' },
+      { q: 'Qual o primeiro nome do seu pai?', a: 'flávio' },
+      { q: 'Qual o primeiro nome do seu irmão?', a: 'paulo' },
+      { q: 'Qual o nome da cidade em que nasceu?', a: 'guarujá' },
+      { q: 'Quantos anos você faz hoje?', a: ['16', '16 anos'] },
+      { q: 'Onde você estuda (nome completo)?', a: 'escola estadual professor diniz martins' },
+      { q: 'Qual o seu celular?', a: 'iphone 14' },
+    ];
+
+    let current = 0;
+    const questionEl = document.getElementById("question");
+    const answerEl = document.getElementById("answer");
+    const box = document.getElementById("question-box");
+    const main = document.getElementById("main-content");
+    const music = document.getElementById("bg-music");
+
+    function normalize(str) {
+      return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+    }
+
+    function askNextQuestion() {
+      if (current < questions.length) {
+        questionEl.textContent = questions[current].q;
+        answerEl.value = '';
+        answerEl.focus();
+      } else {
+        box.classList.add("hidden");
+        main.classList.remove("hidden");
+        explodeConfetti();
+        setTimeout(() => {
+          document.getElementById("extra-line").textContent = "Vê se não chora de saudades kkkkk";
+        }, 2000);
+      }
+    }
+
+    answerEl.addEventListener("keypress", function(e) {
+      if (e.key === "Enter") {
+        const ans = normalize(answerEl.value.trim());
+        const correct = questions[current].a;
+        const isCorrect = Array.isArray(correct)
+          ? correct.map(normalize).includes(ans)
+          : normalize(correct) === ans;
+
+        if (isCorrect) {
+          current++;
+          askNextQuestion();
+        } else {
+          alert("Errou! Tenta de novo 😂");
+        }
+      }
+    });
+
+    function explodeConfetti() {
+      const container = document.getElementById("confetti-container");
+      for (let i = 0; i < 150; i++) {
+        const confetti = document.createElement("div");
+        confetti.classList.add("confetti-piece");
+        confetti.style.left = Math.random() * 100 + "vw";
+        confetti.style.top = "-10px";
+        confetti.style.setProperty('--hue', Math.floor(Math.random() * 360));
+        container.appendChild(confetti);
+        setTimeout(() => confetti.remove(), 3000);
+      }
+    }
+
+    function showFinalJoke() {
+      const emoji = ["😂", "🤡", "💀", "📄", "🪦", "📉"];
+      for (let i = 0; i < 50; i++) {
+        const e = document.createElement("div");
+        e.classList.add("emoji-burst");
+        e.innerText = emoji[Math.floor(Math.random() * emoji.length)];
+        e.style.left = Math.random() * 100 + "vw";
+        e.style.top = Math.random() * 100 + "vh";
+        document.body.appendChild(e);
+        setTimeout(() => e.remove(), 2000);
+      }
+      document.getElementById("joke").classList.remove("hidden");
+    }
+
+    function startMusic() {
+      music.play();
+      document.querySelector(".music-btn").classList.add("hidden");
+    }
+
+    askNextQuestion();
+  </script>
+</body>
+</html>
