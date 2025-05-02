@@ -2,7 +2,7 @@
 <html lang="pt-br">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Surpresa Insana</title>
   <style>
     body {
@@ -45,11 +45,6 @@
       font-size: 1.1em;
       display: block;
       margin-bottom: 10px;
-    }
-
-    .message-box p {
-      font-size: 1.2em;
-      line-height: 1.6;
     }
 
     .typing-line {
@@ -128,24 +123,18 @@
 
     .hidden { display: none; }
 
-    #slideshow-container {
-      position: relative;
-      height: 400px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      margin-top: 40px;
-    }
-
     #slideshow-container img {
-      max-width: 90%;
-      max-height: 100%;
       position: absolute;
+      left: 50%;
+      top: 200px;
+      transform: translateX(-50%);
+      max-width: 90%;
+      max-height: 400px;
       border-radius: 20px;
       box-shadow: 0 0 30px magenta;
       opacity: 0;
       transition: opacity 1s ease-in-out;
-      object-fit: contain;
+      z-index: 1;
     }
   </style>
 </head>
@@ -157,14 +146,19 @@
     </div>
 
     <div id="main-content" class="hidden">
-      <div class="message-box">
+      <div id="slideshow-container"></div>
+
+      <img src="https://media.giphy.com/media/3o7TKxOhj5xv4xXXsI/giphy.gif" alt="dança" class="gif-dance" />
+
+      <div id="mensagem-final" class="message-box hidden">
         <p>Daqui a pouco faz 18... e vai virar mais uma desempregada no sistema 😂</p>
         <p>Curte essa fase porque depois é boleto, caos e café frio!</p>
         <p>Parabéns Paolla, mas sem drama — só mais um nível desbloqueado, agora daqui pra frente é só pra trás. 💥</p>
         <p id="extra-line" class="typing-line"></p>
       </div>
-      <img src="https://media.giphy.com/media/3o7TKxOhj5xv4xXXsI/giphy.gif" alt="dança" class="gif-dance" />
+
       <button class="final-btn hidden" onclick="showFinalJoke()">Não clique Aqui! 🎁</button>
+
       <div id="joke" class="hidden">
         <div class="message-box" style="margin-top: 30px; background: #222;">
           <h3>Candidata a desempregada 2028</h3>
@@ -176,7 +170,7 @@
   </div>
 
   <div id="confetti-container"></div>
-  <audio id="bg-music" src="audio/musica.mp3" autoplay loop></audio>
+  <audio id="bg-music" src="audio/musica.mp3" loop></audio>
 
   <script>
     const questions = [
@@ -209,12 +203,12 @@
         box.classList.add("hidden");
         main.classList.remove("hidden");
         explodeConfetti();
-        setTimeout(() => {
+        mostrarFotosComMusica(() => {
+          document.getElementById("mensagem-final").classList.remove("hidden");
           document.getElementById("extra-line").textContent = "Vê se não chora de saudades kkkkk";
-          mostrarFotosComMusica(() => {
-            mostrarMensagemFinal();
-          });
-        }, 2000);
+          document.querySelector(".final-btn").classList.remove("hidden");
+          document.getElementById("joke").classList.remove("hidden");
+        });
       }
     }
 
@@ -250,10 +244,7 @@
     }
 
     function mostrarFotosComMusica(callback) {
-      const container = document.createElement("div");
-      container.id = "slideshow-container";
-      main.appendChild(container);
-
+      const container = document.getElementById("slideshow-container");
       const total = 23;
       let index = 1;
 
@@ -267,10 +258,7 @@
         img.src = `imagens/foto${index}.jpg`;
         container.appendChild(img);
 
-        // fade in
         setTimeout(() => { img.style.opacity = "1"; }, 100);
-
-        // fade out e próxima
         setTimeout(() => {
           img.style.opacity = "0";
           setTimeout(() => {
@@ -282,11 +270,6 @@
       }
 
       mostrarProximaImagem();
-    }
-
-    function mostrarMensagemFinal() {
-      document.querySelector(".final-btn").classList.remove("hidden");
-      document.getElementById("joke").classList.remove("hidden");
     }
 
     function showFinalJoke() {
