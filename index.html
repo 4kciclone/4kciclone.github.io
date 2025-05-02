@@ -128,8 +128,24 @@
 
     .hidden { display: none; }
 
-    @keyframes fadeIn {
-      to { opacity: 1; }
+    #slideshow-container {
+      position: relative;
+      height: 400px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-top: 40px;
+    }
+
+    #slideshow-container img {
+      max-width: 90%;
+      max-height: 100%;
+      position: absolute;
+      border-radius: 20px;
+      box-shadow: 0 0 30px magenta;
+      opacity: 0;
+      transition: opacity 1s ease-in-out;
+      object-fit: contain;
     }
   </style>
 </head>
@@ -169,8 +185,8 @@
       { q: 'Qual o primeiro nome do seu irmão?', a: 'paulo' },
       { q: 'Qual o nome da cidade em que nasceu?', a: 'guarujá' },
       { q: 'Quantos anos você faz hoje?', a: ['16', '16 anos'] },
-      { q: 'Onde você estuda (nome completo)?', a: ['escola estadual professor diniz martins', 'diniz martins', 'escola estadual prof° diniz martins', 'e.e.prof° diniz martins', 'e. e. prof° diniz martins', 'escola estadual prof diniz martins', 'e.e.prof diniz martins', 'e. e. prof diniz martins'] },
-      { q: 'Qual o seu celular?', a: 'iphone 14' },
+      { q: 'Onde você estuda (nome completo)?', a: ['escola estadual professor diniz martins'] },
+      { q: 'Qual o seu celular?', a: ['iphone 14', 'iphone14'] },
     ];
 
     let current = 0;
@@ -179,8 +195,6 @@
     const box = document.getElementById("question-box");
     const main = document.getElementById("main-content");
     const music = document.getElementById("bg-music");
-
-    music.play();
 
     function normalize(str) {
       return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
@@ -206,6 +220,7 @@
 
     answerEl.addEventListener("keypress", function(e) {
       if (e.key === "Enter") {
+        if (music.paused) music.play();
         const ans = normalize(answerEl.value.trim());
         const correct = questions[current].a;
         const isCorrect = Array.isArray(correct)
@@ -236,28 +251,37 @@
 
     function mostrarFotosComMusica(callback) {
       const container = document.createElement("div");
-      container.style.marginTop = "40px";
-      const total = 23;
-
-      for (let i = 1; i <= total; i++) {
-        const img = document.createElement("img");
-        img.src = `imagens/foto${i}.jpg`;
-        img.style.width = "300px";
-        img.style.margin = "20px";
-        img.style.borderRadius = "20px";
-        img.style.boxShadow = "0 0 15px magenta";
-        img.style.opacity = "0";
-        img.style.animation = `fadeIn 1s ease ${i * 0.5}s forwards`;
-        img.style.animationFillMode = "forwards";
-        container.appendChild(img);
-      }
-
+      container.id = "slideshow-container";
       main.appendChild(container);
 
-      const duracaoTotal = total * 500 + 1000;
-      setTimeout(() => {
-        callback();
-      }, duracaoTotal);
+      const total = 23;
+      let index = 1;
+
+      function mostrarProximaImagem() {
+        if (index > total) {
+          callback();
+          return;
+        }
+
+        const img = document.createElement("img");
+        img.src = `imagens/foto${index}.jpg`;
+        container.appendChild(img);
+
+        // fade in
+        setTimeout(() => { img.style.opacity = "1"; }, 100);
+
+        // fade out e próxima
+        setTimeout(() => {
+          img.style.opacity = "0";
+          setTimeout(() => {
+            img.remove();
+            index++;
+            mostrarProximaImagem();
+          }, 1000);
+        }, 2500);
+      }
+
+      mostrarProximaImagem();
     }
 
     function mostrarMensagemFinal() {
