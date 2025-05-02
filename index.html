@@ -96,7 +96,7 @@
       100% { transform: rotate(-2deg); }
     }
 
-    .final-btn, .music-btn {
+    .final-btn {
       margin-top: 30px;
       padding: 15px 30px;
       font-size: 1.2em;
@@ -128,7 +128,6 @@
 
     .hidden { display: none; }
 
-    /* Fade-in das imagens */
     @keyframes fadeIn {
       to { opacity: 1; }
     }
@@ -149,8 +148,7 @@
         <p id="extra-line" class="typing-line"></p>
       </div>
       <img src="https://media.giphy.com/media/3o7TKxOhj5xv4xXXsI/giphy.gif" alt="dança" class="gif-dance" />
-      <button class="music-btn" onclick="startMusic()">Tocar Música 🎵</button>
-      <button class="final-btn" onclick="showFinalJoke()">Não clique Aqui! 🎁</button>
+      <button class="final-btn hidden" onclick="showFinalJoke()">Não clique Aqui! 🎁</button>
       <div id="joke" class="hidden">
         <div class="message-box" style="margin-top: 30px; background: #222;">
           <h3>Candidata a desempregada 2028</h3>
@@ -162,7 +160,7 @@
   </div>
 
   <div id="confetti-container"></div>
-  <audio id="bg-music" src="audio/musica.mp3" loop></audio>
+  <audio id="bg-music" src="audio/musica.mp3" autoplay loop></audio>
 
   <script>
     const questions = [
@@ -171,7 +169,7 @@
       { q: 'Qual o primeiro nome do seu irmão?', a: 'paulo' },
       { q: 'Qual o nome da cidade em que nasceu?', a: 'guarujá' },
       { q: 'Quantos anos você faz hoje?', a: ['16', '16 anos'] },
-      { q: 'Onde você estuda (nome completo)?', a: 'escola estadual professor diniz martins' },
+      { q: 'Onde você estuda (nome completo)?', a: ['escola estadual professor diniz martins', 'diniz martins', 'escola estadual prof° diniz martins', 'e.e.prof° diniz martins', 'e. e. prof° diniz martins', 'escola estadual prof diniz martins', 'e.e.prof diniz martins', 'e. e. prof diniz martins'] },
       { q: 'Qual o seu celular?', a: 'iphone 14' },
     ];
 
@@ -181,6 +179,8 @@
     const box = document.getElementById("question-box");
     const main = document.getElementById("main-content");
     const music = document.getElementById("bg-music");
+
+    music.play();
 
     function normalize(str) {
       return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
@@ -197,7 +197,9 @@
         explodeConfetti();
         setTimeout(() => {
           document.getElementById("extra-line").textContent = "Vê se não chora de saudades kkkkk";
-          mostrarFotosComMusica();
+          mostrarFotosComMusica(() => {
+            mostrarMensagemFinal();
+          });
         }, 2000);
       }
     }
@@ -232,6 +234,37 @@
       }
     }
 
+    function mostrarFotosComMusica(callback) {
+      const container = document.createElement("div");
+      container.style.marginTop = "40px";
+      const total = 23;
+
+      for (let i = 1; i <= total; i++) {
+        const img = document.createElement("img");
+        img.src = `imagens/foto${i}.jpg`;
+        img.style.width = "300px";
+        img.style.margin = "20px";
+        img.style.borderRadius = "20px";
+        img.style.boxShadow = "0 0 15px magenta";
+        img.style.opacity = "0";
+        img.style.animation = `fadeIn 1s ease ${i * 0.5}s forwards`;
+        img.style.animationFillMode = "forwards";
+        container.appendChild(img);
+      }
+
+      main.appendChild(container);
+
+      const duracaoTotal = total * 500 + 1000;
+      setTimeout(() => {
+        callback();
+      }, duracaoTotal);
+    }
+
+    function mostrarMensagemFinal() {
+      document.querySelector(".final-btn").classList.remove("hidden");
+      document.getElementById("joke").classList.remove("hidden");
+    }
+
     function showFinalJoke() {
       const emoji = ["😂", "🤡", "💀", "📄", "🪦", "📉"];
       for (let i = 0; i < 50; i++) {
@@ -243,32 +276,6 @@
         document.body.appendChild(e);
         setTimeout(() => e.remove(), 2000);
       }
-      document.getElementById("joke").classList.remove("hidden");
-    }
-
-    function startMusic() {
-      music.play();
-      document.querySelector(".music-btn").classList.add("hidden");
-    }
-
-    function mostrarFotosComMusica() {
-      const imagens = ['imagens/foto1.jpg', 'imagens/foto2.jpg', 'imagens/foto3.jpg'];
-      const container = document.createElement("div");
-      container.style.marginTop = "40px";
-
-      imagens.forEach((src, index) => {
-        const img = document.createElement("img");
-        img.src = src;
-        img.style.width = "300px";
-        img.style.margin = "20px";
-        img.style.borderRadius = "20px";
-        img.style.boxShadow = "0 0 15px magenta";
-        img.style.opacity = "0";
-        img.style.animation = `fadeIn 1s ease ${index}s forwards`;
-        container.appendChild(img);
-      });
-
-      main.appendChild(container);
     }
 
     askNextQuestion();
