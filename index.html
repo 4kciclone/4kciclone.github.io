@@ -30,7 +30,6 @@
       backdrop-filter: blur(10px);
       box-shadow: 0 0 20px #ff007f;
       animation: popIn 0.8s ease forwards;
-      will-change: transform, opacity;
     }
 
     .question-box input {
@@ -65,19 +64,9 @@
       animation: typing 3s steps(40, end) 2s forwards, blink 0.7s infinite step-end alternate;
     }
 
-    @keyframes typing {
-      from { width: 0 }
-      to { width: 100% }
-    }
-
-    @keyframes blink {
-      50% { border-color: transparent }
-    }
-
-    @keyframes popIn {
-      0% { transform: scale(0.5); opacity: 0; }
-      100% { transform: scale(1); opacity: 1; }
-    }
+    @keyframes typing { from { width: 0 } to { width: 100% } }
+    @keyframes blink { 50% { border-color: transparent } }
+    @keyframes popIn { 0% { transform: scale(0.5); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
 
     .confetti-piece {
       position: absolute;
@@ -86,7 +75,6 @@
       background-color: hsl(var(--hue), 70%, 60%);
       animation: confettiFall 3s ease-out forwards;
       opacity: 0.8;
-      will-change: transform;
     }
 
     @keyframes confettiFall {
@@ -139,6 +127,11 @@
     }
 
     .hidden { display: none; }
+
+    /* Fade-in das imagens */
+    @keyframes fadeIn {
+      to { opacity: 1; }
+    }
   </style>
 </head>
 <body>
@@ -169,7 +162,7 @@
   </div>
 
   <div id="confetti-container"></div>
-  <audio id="bg-music" src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" loop></audio>
+  <audio id="bg-music" src="audio/musica.mp3" loop></audio>
 
   <script>
     const questions = [
@@ -204,6 +197,7 @@
         explodeConfetti();
         setTimeout(() => {
           document.getElementById("extra-line").textContent = "Vê se não chora de saudades kkkkk";
+          mostrarFotosComMusica();
         }, 2000);
       }
     }
@@ -255,6 +249,26 @@
     function startMusic() {
       music.play();
       document.querySelector(".music-btn").classList.add("hidden");
+    }
+
+    function mostrarFotosComMusica() {
+      const imagens = ['imagens/foto1.jpg', 'imagens/foto2.jpg', 'imagens/foto3.jpg'];
+      const container = document.createElement("div");
+      container.style.marginTop = "40px";
+
+      imagens.forEach((src, index) => {
+        const img = document.createElement("img");
+        img.src = src;
+        img.style.width = "300px";
+        img.style.margin = "20px";
+        img.style.borderRadius = "20px";
+        img.style.boxShadow = "0 0 15px magenta";
+        img.style.opacity = "0";
+        img.style.animation = `fadeIn 1s ease ${index}s forwards`;
+        container.appendChild(img);
+      });
+
+      main.appendChild(container);
     }
 
     askNextQuestion();
