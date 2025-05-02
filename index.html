@@ -156,6 +156,7 @@
         <p>Parabéns Paolla, mas sem drama — só mais um nível desbloqueado, agora daqui pra frente é só pra trás. 💥</p>
         <p id="extra-line" class="typing-line"></p>
       </div>
+      
 
       <button class="final-btn hidden" onclick="showFinalJoke()">Não clique Aqui! 🎁</button>
 
@@ -201,18 +202,21 @@
         answerEl.focus();
       } else {
         box.classList.add("hidden");
-        main.classList.remove("hidden");
-        explodeConfetti();
-        mostrarFotosComMusica(() => {
-          document.getElementById("mensagem-final").classList.remove("hidden");
-          document.getElementById("extra-line").textContent = "Vê se não chora de saudades kkkkk";
-          document.querySelector(".final-btn").classList.remove("hidden");
-          document.getElementById("joke").classList.remove("hidden");
-        });
+main.classList.remove("hidden");
+explodeConfetti();
+
+mostrarFotosComMusica(() => {
+  document.getElementById("mensagem-final").classList.remove("hidden");
+  document.getElementById("extra-line").textContent = "Vê se não chora de saudades kkkkk";
+  document.querySelector(".final-btn").classList.remove("hidden");
+  document.getElementById("joke").classList.remove("hidden");
+});
+
       }
     }
 
     answerEl.addEventListener("keypress", function(e) {
+      if (music.paused) music.play();
       if (e.key === "Enter") {
         if (music.paused) music.play();
         const ans = normalize(answerEl.value.trim());
@@ -244,33 +248,51 @@
     }
 
     function mostrarFotosComMusica(callback) {
-      const container = document.getElementById("slideshow-container");
-      const total = 23;
-      let index = 1;
+  const container = document.createElement("div");
+  container.id = "slideshow-container";
+  container.style.position = "relative";
+  container.style.height = "400px";
+  container.style.display = "flex";
+  container.style.justifyContent = "center";
+  container.style.alignItems = "center";
+  container.style.marginTop = "40px";
+  main.appendChild(container);
 
-      function mostrarProximaImagem() {
-        if (index > total) {
-          callback();
-          return;
-        }
+  const total = 23;
+  let index = 1;
 
-        const img = document.createElement("img");
-        img.src = `imagens/foto${index}.jpg`;
-        container.appendChild(img);
-
-        setTimeout(() => { img.style.opacity = "1"; }, 100);
-        setTimeout(() => {
-          img.style.opacity = "0";
-          setTimeout(() => {
-            img.remove();
-            index++;
-            mostrarProximaImagem();
-          }, 1000);
-        }, 2500);
-      }
-
-      mostrarProximaImagem();
+  function mostrarProximaImagem() {
+    if (index > total) {
+      container.remove();
+      callback(); // só mostra o texto depois que acabar as imagens
+      return;
     }
+
+    const img = document.createElement("img");
+    img.src = `imagens/foto${index}.jpg`;
+    img.style.maxWidth = "90%";
+    img.style.maxHeight = "100%";
+    img.style.borderRadius = "20px";
+    img.style.boxShadow = "0 0 30px magenta";
+    img.style.position = "absolute";
+    img.style.opacity = "0";
+    img.style.transition = "opacity 1s ease-in-out";
+    container.appendChild(img);
+
+    setTimeout(() => { img.style.opacity = "1"; }, 100);
+    setTimeout(() => {
+      img.style.opacity = "0";
+      setTimeout(() => {
+        img.remove();
+        index++;
+        mostrarProximaImagem();
+      }, 1000);
+    }, 2500);
+  }
+
+  mostrarProximaImagem();
+}
+
 
     function showFinalJoke() {
       const emoji = ["😂", "🤡", "💀", "📄", "🪦", "📉"];
