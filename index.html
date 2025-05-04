@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Surpresa Insana</title>
+  <title>Surpresa</title>
   <style>
     body {
       margin: 0;
@@ -75,20 +75,6 @@
     @keyframes confettiFall {
       0% { transform: translateY(0) rotate(0deg); opacity: 1; }
       100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
-    }
-
-    .gif-dance {
-      width: 300px;
-      margin-top: 30px;
-      border-radius: 20px;
-      box-shadow: 0 0 20px magenta;
-      animation: shake 1s infinite;
-    }
-
-    @keyframes shake {
-      0% { transform: rotate(-2deg); }
-      50% { transform: rotate(2deg); }
-      100% { transform: rotate(-2deg); }
     }
 
     .final-btn {
@@ -171,16 +157,39 @@
   </div>
 
   <div id="confetti-container"></div>
-  <audio id="bg-music" src="audio/musica.mp3" loop></audio>
+  
+  <!-- Remover a tag de áudio anterior -->
+  <audio id="bg-music" ></audio>
 
   <script>
+    const musicas = [
+      "audio/musica1.mp3",
+      "audio/musica2.mp3",
+      "audio/musica3.mp3",
+      "audio/musica4.mp3",
+      "audio/musica5.mp3",
+      "audio/musica6.mp3",
+    ];
+
+    let musicIndex = 0;
+    const audio = document.getElementById("bg-music");
+    audio.src = musicas[musicIndex];
+    audio.play();
+
+    audio.onended = function() {
+      musicIndex = (musicIndex + 1) % musicas.length; // Alterna entre as músicas
+      audio.src = musicas[musicIndex];
+      audio.play();
+    };
+
     const questions = [
-      { q: 'Qual o primeiro nome da sua mãe?', a: 'edina' },
-      { q: 'Qual o primeiro nome do seu pai?', a: 'flávio' },
-      { q: 'Qual o primeiro nome do seu irmão?', a: 'paulo' },
+      { q: 'Qual o nome da mãe?', a: 'edina de jesus pereira' },
+      { q: 'Qual nome do pai?', a: 'flávio rodrigues da silva' },
+      { q: 'Qual o nome do irmão?', a: 'paulo cezar pereira limeira' },
       { q: 'Qual o nome da cidade em que nasceu?', a: 'guarujá' },
       { q: 'Quantos anos você faz hoje?', a: ['16', '16 anos'] },
-      { q: 'Onde você estuda (nome completo)?', a: ['escola estadual professor diniz martins'] },
+      { q: 'Onde você estuda (nome completo)?', a: ['escola estadual professor diniz martins', 'e.e professor diniz martins',
+    'escola estadual prof° diniz martins','e.e prof° professor diniz martins','e.e prof diniz martins','escola estadual prof diniz martins'] },
       { q: 'Qual o seu celular?', a: ['iphone 14', 'iphone14'] },
     ];
 
@@ -189,7 +198,6 @@
     const answerEl = document.getElementById("answer");
     const box = document.getElementById("question-box");
     const main = document.getElementById("main-content");
-    const music = document.getElementById("bg-music");
 
     function normalize(str) {
       return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
@@ -202,23 +210,21 @@
         answerEl.focus();
       } else {
         box.classList.add("hidden");
-main.classList.remove("hidden");
-explodeConfetti();
+        main.classList.remove("hidden");
+        explodeConfetti();
 
-mostrarFotosComMusica(() => {
-  document.getElementById("mensagem-final").classList.remove("hidden");
-  document.getElementById("extra-line").textContent = "Vê se não chora de saudades kkkkk";
-  document.querySelector(".final-btn").classList.remove("hidden");
-  document.getElementById("joke").classList.remove("hidden");
-});
-
+        mostrarFotosComMusica(() => {
+          document.getElementById("mensagem-final").classList.remove("hidden");
+          document.getElementById("extra-line").textContent = "Vê se não chora de saudades kkkkk";
+          document.querySelector(".final-btn").classList.remove("hidden");
+          document.getElementById("joke").classList.remove("hidden");
+        });
       }
     }
 
     answerEl.addEventListener("keypress", function(e) {
-      if (music.paused) music.play();
+      if (audio.paused) audio.play();
       if (e.key === "Enter") {
-        if (music.paused) music.play();
         const ans = normalize(answerEl.value.trim());
         const correct = questions[current].a;
         const isCorrect = Array.isArray(correct)
@@ -248,65 +254,63 @@ mostrarFotosComMusica(() => {
     }
 
     function mostrarFotosComMusica(callback) {
-  const gif = document.querySelector(".gif-dance");
-  gif.classList.add("hidden"); // Esconde o GIF
-  const container = document.createElement("div");
-  container.id = "slideshow-container";
-  container.style.position = "relative";
-  container.style.height = "400px";
-  container.style.display = "flex";
-  container.style.justifyContent = "center";
-  container.style.alignItems = "center";
-  container.style.marginTop = "40px";
-  main.appendChild(container);
+      const gif = document.querySelector(".gif-dance");
+      gif.classList.add("hidden"); // Esconde o GIF
+      const container = document.createElement("div");
+      container.id = "slideshow-container";
+      container.style.position = "relative";
+      container.style.height = "400px";
+      container.style.display = "flex";
+      container.style.justifyContent = "center";
+      container.style.alignItems = "center";
+      container.style.marginTop = "40px";
+      main.appendChild(container);
 
-  const total = 23;
-  let index = 1;
+      const total = 21;
+      let index = 1;
 
-  function mostrarProximaImagem() {
-    if (index > total) {
-      container.remove();
-      gif.classList.remove("hidden");
-      callback(); // só mostra o texto depois que acabar as imagens
-      return;
+      function mostrarProximaImagem() {
+        if (index > total) {
+          container.remove();
+          callback(); // só mostra o texto depois que acabar as imagens
+          return;
+        }
+
+        const img = document.createElement("img");
+        img.src = `imagens/foto${index}.jpg`;
+        img.style.maxWidth = "90%";
+        img.style.maxHeight = "100%";
+        img.style.borderRadius = "20px";
+        img.style.boxShadow = "0 0 30px magenta";
+        img.style.position = "absolute";
+        img.style.opacity = "0";
+        img.style.transition = "opacity 1s ease-in-out";
+        container.appendChild(img);
+
+        setTimeout(() => { img.style.opacity = "1"; }, 100);
+        setTimeout(() => {
+          img.style.opacity = "0";
+          setTimeout(() => {
+            img.remove();
+            index++;
+            mostrarProximaImagem();
+          }, 1000);
+        }, 2500);
+      }
+
+      mostrarProximaImagem();
     }
-
-    const img = document.createElement("img");
-    img.src = `imagens/foto${index}.jpg`;
-    img.style.maxWidth = "90%";
-    img.style.maxHeight = "100%";
-    img.style.borderRadius = "20px";
-    img.style.boxShadow = "0 0 30px magenta";
-    img.style.position = "absolute";
-    img.style.opacity = "0";
-    img.style.transition = "opacity 1s ease-in-out";
-    container.appendChild(img);
-
-    setTimeout(() => { img.style.opacity = "1"; }, 100);
-    setTimeout(() => {
-      img.style.opacity = "0";
-      setTimeout(() => {
-        img.remove();
-        index++;
-        mostrarProximaImagem();
-      }, 1000);
-    }, 2500);
-  }
-
-  mostrarProximaImagem();
-}
-
 
     function showFinalJoke() {
       const emoji = ["😂", "🤡", "💀", "📄", "🪦", "📉"];
       for (let i = 0; i < 50; i++) {
-        const e = document.createElement("div");
+        const e = document.createElement("span");
         e.classList.add("emoji-burst");
         e.innerText = emoji[Math.floor(Math.random() * emoji.length)];
         e.style.left = Math.random() * 100 + "vw";
-        e.style.top = Math.random() * 100 + "vh";
+        e.style.top = "80vh";
+        e.style.animationDuration = `${Math.random() * 2 + 1}s`;
         document.body.appendChild(e);
-        setTimeout(() => e.remove(), 2000);
       }
     }
 
