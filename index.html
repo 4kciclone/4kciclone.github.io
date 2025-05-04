@@ -157,6 +157,10 @@
   </div>
 
   <div id="confetti-container"></div>
+  <button id="skip-btn" class="final-btn" style="position: fixed; bottom: 20px; right: 20px; z-index: 999;">
+    ⏭️ Pular Música
+  </button>
+  
   
   <!-- Remover a tag de áudio anterior -->
   <audio id="bg-music" ></audio>
@@ -181,6 +185,12 @@
       audio.src = musicas[musicIndex];
       audio.play();
     };
+    document.getElementById("skip-btn").addEventListener("click", () => {
+  musicIndex = (musicIndex + 1) % musicas.length;
+  audio.src = musicas[musicIndex];
+  audio.play();
+});
+
 
     const questions = [
       { q: 'Qual o nome da mãe?', a: 'edina de jesus pereira' },
@@ -189,7 +199,7 @@
       { q: 'Qual o nome da cidade em que nasceu?', a: 'guarujá' },
       { q: 'Quantos anos você faz hoje?', a: ['16', '16 anos'] },
       { q: 'Onde você estuda (nome completo)?', a: ['escola estadual professor diniz martins', 'e.e professor diniz martins',
-    'escola estadual prof° diniz martins','e.e prof° professor diniz martins','e.e prof diniz martins','escola estadual prof diniz martins'] },
+    'escola estadual prof° diniz martins','e.e prof° diniz martins','e.e prof diniz martins','escola estadual prof diniz martins'] },
       { q: 'Qual o seu celular?', a: ['iphone 14', 'iphone14'] },
     ];
 
